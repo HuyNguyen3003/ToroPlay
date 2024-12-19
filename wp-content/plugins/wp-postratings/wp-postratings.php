@@ -3,7 +3,7 @@
 Plugin Name: WP-PostRatings
 Plugin URI: https://lesterchan.net/portfolio/programming/php/
 Description: Adds an AJAX rating system for your WordPress site's content.
-Version: 1.90
+Version: 1.91.2
 Author: Lester 'GaMerZ' Chan
 Author URI: https://lesterchan.net
 Text Domain: wp-postratings
@@ -11,7 +11,7 @@ Text Domain: wp-postratings
 
 
 /*
-	Copyright 2022 Lester Chan (email: lesterchan@gmail.com)
+	Copyright 2024 Lester Chan (email: lesterchan@gmail.com)
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin version
  * Set wp-postratings plugin version.
  */
-define( 'WP_POSTRATINGS_VERSION', '1.90' );
+define( 'WP_POSTRATINGS_VERSION', '1.91.2' );
 
 /**
  * Rating logs table name
@@ -262,7 +262,7 @@ function check_rated_cookie( $post_id ) {
 function check_rated_ip($post_id) {
 	global $wpdb;
 	// Check IP From IP Logging Database
-	$get_rated = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->ratings} WHERE rating_postid = %d AND (rating_ip = %s OR rating_ip = %s)", $post_id, ratings_get_ipaddress(), get_ipaddress()  ) );
+	$get_rated = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->ratings} WHERE rating_postid = %d AND rating_ip = %s", $post_id, ratings_get_ipaddress() ) );
 	// 0: False | > 0: True
 	return (int) $get_rated;
 }
@@ -387,27 +387,26 @@ function comment_author_ratings_filter( $comment_text ) {
 
 
 ### Function: Get IP Address
-if ( ! function_exists( 'get_ipaddress' ) ) {
-	function get_ipaddress() {
-		foreach ( array( 'HTTP_CF_CONNECTING_IP', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR' ) as $key ) {
-			if ( array_key_exists( $key, $_SERVER ) === true ) {
-				foreach ( explode( ',', $_SERVER[$key] ) as $ip ) {
-					$ip = trim( $ip );
-					if ( filter_var( $ip, FILTER_VALIDATE_IP ) !== false ) {
-						return esc_attr( $ip );
-					}
-				}
-			}
-		}
+function ratings_get_raw_ipaddress() {
+	$ip = esc_attr( $_SERVER['REMOTE_ADDR'] );
+	$postratings_options = get_option( 'postratings_options' );
+
+	if ( ! empty( $postratings_options ) && ! empty( $postratings_options['ip_header'] ) && ! empty( $_SERVER[ $postratings_options['ip_header'] ] ) ) {
+		$ip = esc_attr( $_SERVER[ $postratings_options['ip_header'] ] );
 	}
+
+	return $ip;
 }
+
 function ratings_get_ipaddress() {
-	return apply_filters( 'wp_postratings_ipaddress', wp_hash( get_ipaddress() ) );
+	return apply_filters( 'wp_postratings_ipaddress', wp_hash( ratings_get_raw_ipaddress() ) );
 }
+
 function ratings_get_hostname() {
-	$hostname = gethostbyaddr( get_ipaddress() );
-	if ( $hostname === get_ipaddress() ) {
-		$hostname = wp_privacy_anonymize_ip( get_ipaddress() );
+	$ip = ratings_get_raw_ipaddress();
+	$hostname = gethostbyaddr( $ip );
+	if ( $hostname === $ip ) {
+		$hostname = wp_privacy_anonymize_ip( $ip );
 	}
 
 	if ( false !== $hostname ) {
@@ -416,7 +415,6 @@ function ratings_get_hostname() {
 
 	return apply_filters( 'wp_postratings_hostname', $hostname );
 }
-
 
 ### Function: Return All Images From A Rating Image Folder
 function ratings_images_folder($folder_name) {
@@ -1223,12 +1221,12 @@ function expand_ratings_template($template, $post_data, $post_ratings_data = nul
 		}
 		$post_meta = '<meta itemprop="name" content="' . esc_attr( $post_title ) . '" />';
 		$post_meta .= '<meta itemprop="headline" content="' . esc_attr( $post_title ) . '" />';
-		$post_meta .= '<meta itemprop="description" content="' . wp_kses( $post_excerpt, array() ) . '" />';
-		$post_meta .= '<meta itemprop="datePublished" content="' . mysql2date( 'c', $post->post_date, false ) . '" />';
-		$post_meta .= '<meta itemprop="dateModified" content="' . mysql2date( 'c', $post->post_modified, false ) . '" />';
-		$post_meta .= '<meta itemprop="url" content="' . $post_link . '" />';
-		$post_meta .= '<meta itemprop="author" content="' . get_the_author() . '" />';
-		$post_meta .= '<meta itemprop="mainEntityOfPage" content="' . get_permalink() . '" />';
+		$post_meta .= '<meta itemprop="description" content="' . esc_attr( wp_kses( $post_excerpt, array() ) ) . '" />';
+		$post_meta .= '<meta itemprop="datePublished" content="' . esc_attr( mysql2date( 'c', $post->post_date, false ) ) . '" />';
+		$post_meta .= '<meta itemprop="dateModified" content="' . esc_attr( mysql2date( 'c', $post->post_modified, false ) ) . '" />';
+		$post_meta .= '<meta itemprop="url" content="' . esc_url( $post_link ) . '" />';
+		$post_meta .= '<meta itemprop="author" content="' . esc_attr( get_the_author() ) . '" />';
+		$post_meta .= '<meta itemprop="mainEntityOfPage" content="' . esc_url( get_permalink() ) . '" />';
 		// Post Thumbnail
 		$thumbnail = '';
 		if ( has_post_thumbnail() ) {
@@ -1237,9 +1235,9 @@ function expand_ratings_template($template, $post_data, $post_ratings_data = nul
 		$thumbnail = apply_filters( 'wp_postratings_post_thumbnail', $thumbnail, $post_id );
 		if ( ! empty( $thumbnail ) ) {
 			$post_meta .= '<div style="display: none;" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">';
-			$post_meta .= '<meta itemprop="url" content="' . $thumbnail[0] . '" />';
-			$post_meta .= '<meta itemprop="width" content="' . $thumbnail[1] . '" />';
-			$post_meta .= '<meta itemprop="height" content="' . $thumbnail[2] . '" />';
+			$post_meta .= '<meta itemprop="url" content="' . esc_url( $thumbnail[0] ) . '" />';
+			$post_meta .= '<meta itemprop="width" content="' . esc_attr( $thumbnail[1] ). '" />';
+			$post_meta .= '<meta itemprop="height" content="' . esc_attr( $thumbnail[2] ). '" />';
 			$post_meta .= '</div>';
 		}
 
@@ -1260,20 +1258,20 @@ function expand_ratings_template($template, $post_data, $post_ratings_data = nul
 		}
 		$site_logo = apply_filters( 'wp_postratings_site_logo', $site_logo );
 		$post_meta .= '<div style="display: none;" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">';
-		$post_meta .= '<meta itemprop="name" content="' . get_bloginfo( 'name' ) . '" />';
-		$post_meta .= '<meta itemprop="url" content="' . home_url() . '" />';
+		$post_meta .= '<meta itemprop="name" content="' . esc_attr( get_bloginfo( 'name' ) ) . '" />';
+		$post_meta .= '<meta itemprop="url" content="' . esc_url( home_url() ) . '" />';
 		$post_meta .= '<div itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">';
-		$post_meta .= '<meta itemprop="url" content="' . $site_logo . '" />';
+		$post_meta .= '<meta itemprop="url" content="' . esc_url( $site_logo ). '" />';
 		$post_meta .= '</div>';
 		$post_meta .= '</div>';
 
 		$ratings_meta = '';
 		if ( $ratings_options['richsnippet_ratings']  && $post_ratings_average > 0 ) {
 			$ratings_meta .= '<div style="display: none;" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">';
-			$ratings_meta .= '<meta itemprop="bestRating" content="' . $ratings_max . '" />';
+			$ratings_meta .= '<meta itemprop="bestRating" content="' . esc_attr( $ratings_max ) . '" />';
 			$ratings_meta .= '<meta itemprop="worstRating" content="1" />';
-			$ratings_meta .= '<meta itemprop="ratingValue" content="' . $post_ratings_average . '" />';
-			$ratings_meta .= '<meta itemprop="ratingCount" content="' . $post_ratings_users . '" />';
+			$ratings_meta .= '<meta itemprop="ratingValue" content="' . esc_attr( $post_ratings_average ) . '" />';
+			$ratings_meta .= '<meta itemprop="ratingCount" content="' . esc_attr( $post_ratings_users ) . '" />';
 			$ratings_meta .= '</div>';
 		}
 

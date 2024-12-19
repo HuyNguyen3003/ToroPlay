@@ -76,7 +76,7 @@ class LFC_Admin {
 
 		global $pagenow;
 
-		if ( ( $pagenow == 'options-general.php' ) && ( in_array( $_GET['page'], array( 'lfc-settings' ) ) ) ) {
+		if ( $pagenow == 'options-general.php' && isset( $_GET['page'] ) && ( in_array( $_GET['page'], array( 'lfc-settings' ) ) ) ) {
 
 			wp_enqueue_style(
 				$this->plugin_name,
@@ -151,8 +151,28 @@ class LFC_Admin {
 
 		register_setting(
 			'lfc_options',
-			'lfc_options'
+			'lfc_options',
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+			)
 		);
+	}
+
+	/**
+	 * Sanitize settings.
+	 *
+	 * @since 2.0.5
+	 *
+	 * @param array $value Values.
+	 *
+	 * @return array|string
+	 */
+	public function sanitize_settings( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( 'sanitize_text_field', $value );
+		} else {
+			return sanitize_text_field( $value );
+		}
 	}
 
 	/**
@@ -166,7 +186,7 @@ class LFC_Admin {
 
 		global $pagenow;
 
-		if ( ( $pagenow == 'options-general.php' ) && ( in_array( $_GET['page'], array( 'lfc-settings' ) ) ) ) {
+		if ( $pagenow == 'options-general.php' && isset( $_GET['page'] ) && ( in_array( $_GET['page'], array( 'lfc-settings' ) ) ) ) {
 
 			_e( 'Thank you for choosing Lazy FB Comments to improve your website', 'lazy-facebook-comments' );
 			echo ' | ';

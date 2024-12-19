@@ -1,10 +1,10 @@
 === Fast Velocity Minify ===
 Contributors: Alignak
 Tags: PHP Minify, Lighthouse, GTmetrix, Pingdom, Pagespeed, Merging, Minification, Optimization, Speed, Performance, FVM
-Requires at least: 4.9
-Requires PHP: 5.6
-Stable tag: 3.2.9
-Tested up to: 6.0.2
+Requires at least: 5.6
+Requires PHP: 7.2
+Stable tag: 3.4.1
+Tested up to: 6.3.3
 Text Domain: fast-velocity-minify
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ I can offer you additional `custom made` optimization on top of this plugin. If 
 *	Purge all caches on the entire network (linux): `wp site list --field=url | xargs -n1 -I % wp --url=% fvm purge`
 
 = How to customize the cache path ? =
-You need a public directory to store and serve minified cache files. If you need to customize the path and url, you need to edit your `wp-config.php` and add both `define('FVM_DIR', '/path/to/example.com/your/public/directory');` and `define('FVM_URL', 'https://example.com/your/public/directory');` .
+You need a public directory to store and serve minified cache files. If you need to customize the path and url, you need to edit your `wp-config.php` and add both `define('FVM_CACHE_DIR', '/absolute/path/to/example.com/your/public/directory');` and `define('FVM_CACHE_URL', 'https://example.com/your/public/directory');` .
 
 
 == Installation ==
@@ -48,6 +48,48 @@ You need a public directory to store and serve minified cache files. If you need
 
 
 == Changelog ==
+
+= 3.4.1 [2023.10.19] =
+* removed integrity attributes on minified files
+
+= 3.4.0 [2023.02.21] =
+* better third party cache plugins detection
+
+= 3.3.9 [2023.01.21] =
+* fixed a bug with PHP 8.1 detected encodings and a few notices
+
+= 3.3.8 [2022.12.28] =
+* fixed a typo
+
+= 3.3.7 [2022.12.28] =
+* fixed a bug with the Allowed Query Strings setting
+
+= 3.3.6 [2022.12.13] =
+* buffer compatibility improvements with WP-Super-Cache, W3 Total Cache, WP Rocket, LiteSpeed Cache and Cache Enabler
+
+= 3.3.5 [2022.12.13] =
+* fixed a notice with php cli
+
+= 3.3.3 [2022.12.12] =
+* buffer bug fix
+
+= 3.3.3 [2022.12.11] =
+* custom cache directory fixes
+* upgraded matthiasmullie's PHP Minify to 1.3.70
+* move the viewport meta tag up, before preloading tags
+
+= 3.3.2 [2022.10.07] =
+* improved compatibility with WP Links and All in One SEO
+* additional constant for custom initialization
+* better output buffer processor
+
+= 3.3.1 [2022.10.06] =
+* bug fix
+
+= 3.3.0 [2022.10.06] =
+* fixed minification error on html pre tags
+* fixed an error notice 
+* bumped minimum requirements to PHP 7 and WP 5
 
 = 3.2.9 [2022.08.30] =
 * legacy code removal and other bugfixes

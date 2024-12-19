@@ -111,7 +111,9 @@ function tr_custom_logo() {
 }
 add_filter('get_custom_logo', 'tr_custom_logo');
 
-add_filter('max_srcset_image_width', create_function('', 'return 1;'));
+add_filter('max_srcset_image_width', function() {
+    return 1;
+});
 
 function tr_disable_wp_emojicons() {
 

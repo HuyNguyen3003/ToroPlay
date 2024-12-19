@@ -29,6 +29,19 @@ abstract class Loco_admin_bundle_BaseController extends Loco_mvc_AdminController
 
 
     /**
+     * Get current project's text domain if available
+     * @return string
+     */
+    public function getDomain(){
+        $project = $this->getOptionalProject();
+        if( $project instanceof Loco_package_Project ){
+            return $project->getDomain()->getName();
+        }
+        return '';
+    }
+
+
+    /**
      * Commit bundle config to database
      * @return Loco_admin_bundle_BaseController 
      */
@@ -109,7 +122,9 @@ abstract class Loco_admin_bundle_BaseController extends Loco_mvc_AdminController
             'setup' => __('Setup','loco-translate'),
             'conf'  => __('Advanced','loco-translate'),
         ];
-        if( loco_debugging() ){
+        // Debugger is deprecated. It remains accessible but will be removed or replaced in future versions
+        // If you want to see the Debug button, hook in the following filter with "__return_true"
+        if( apply_filters('loco_deprecated',false) ){
             $actions['debug'] = __('Debug','loco-translate');
         }
         $suffix = $this->get('action');
@@ -127,8 +142,8 @@ abstract class Loco_admin_bundle_BaseController extends Loco_mvc_AdminController
 
     /**
      * Prepare file system connect
-     * @param string "create", "update", "delete"
-     * @param string path relative to wp-content
+     * @param string $type "create", "update", "delete"
+     * @param string $relpath Path relative to wp-content
      * @return Loco_mvc_HiddenFields
      */
     protected function prepareFsConnect( $type, $relpath ){

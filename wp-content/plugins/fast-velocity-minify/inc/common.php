@@ -59,12 +59,12 @@ function fvm_admintoolbar() {
 function fvm_get_cache_location() {
 	
 	# custom path
-	if (defined('FVM_DIR') && defined('FVM_URL')){
+	if (defined('FVM_CACHE_DIR') && defined('FVM_CACHE_URL')){
 		
 		# define paths and url
 		$sep = DIRECTORY_SEPARATOR;
-		$dir = trim(rtrim(FVM_DIR, '/\\')). $sep . 'cache' . $sep . 'fvm'. $sep . 'min';
-		$durl = trim(rtrim(FVM_URL, '/')). '/cache/fvm/min';
+		$dir = trim(rtrim(FVM_CACHE_DIR, '/\\')). $sep . 'cache' . $sep . 'fvm'. $sep . 'min';
+		$durl = trim(rtrim(FVM_CACHE_URL, '/')). '/cache/fvm/min';
 		
 		# create and return
 		if(!is_dir($dir) && function_exists('wp_mkdir_p')) { wp_mkdir_p($dir); }
@@ -338,7 +338,7 @@ function fvm_purge_others(){
 	# Purge Savvii
 	if (defined( '\Savvii\CacheFlusherPlugin::NAME_DOMAINFLUSH_NOW')) {
 		$purge_savvii = new \Savvii\CacheFlusherPlugin();
-		if ( method_exists( $plugin, 'domainflush' ) ) {
+		if ( method_exists( $purge_savvii, 'domainflush' ) ) {
 			$purge_savvii->domainflush();
 			return __( 'A cache purge request has been sent to <strong>Savvii</strong>', 'fast-velocity-minify' );
 		}
@@ -961,6 +961,10 @@ function fvm_replace_css_imports($css, $rq=null) {
 	$cssimports = array();
 	$cssimports_prepend = array();
 	$css = trim($css);
+	
+	# cache version
+	global $tvers;
+	if(!is_numeric($tvers)) { $tvers = get_option('fvm_last_cache_update', '0'); }
 
 	# handle import url rules
 	preg_match_all ("/@import[ ]*['\"]{0,}(url\()*['\"]*([^\(\{'\"\)]*)['\"\)]*[;]{0,}/ui", $css, $cssimports);
@@ -1484,7 +1488,7 @@ function fvm_get_transient($key, $check=null, $with_meta=null) {
 		
 		# return content and meta
 		if(is_null($check) && !is_null($with_meta) && isset($result->date) && isset($result->content) && isset($result->meta)) {
-			return array('date'=>$result->date, 'content'=>$result->content, 'meta'=>json_decode($result->meta, true), 'cache-method'=>$cache_method);
+			return array('date'=>$result->date, 'content'=>$result->content, 'meta'=>json_decode($result->meta, true));
 		}
 			
 	} catch (Exception $e) {
@@ -1698,9 +1702,10 @@ function fvm_is_html($html) {
 
 # ensure that string is utf8	
 function fvm_ensure_utf8($str) {
-	$enc = mb_detect_encoding($str, mb_list_encodings(), true);
+	$encodings = [ "UTF-32", "UTF-32BE", "UTF-32LE", "UTF-16", "UTF-16BE", "UTF-16LE", "UTF-8", "ASCII", "EUC-JP", "SJIS", "eucJP-win", "SJIS-win", "JIS", "ISO-2022-JP", "Windows-1252", "ISO-8859-1", "ISO-8859-2", "ISO-8859-3", "ISO-8859-4", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "ISO-8859-9", "ISO-8859-10", "ISO-8859-13", "ISO-8859-14", "ISO-8859-15", "EUC-CN", "CP936", "EUC-TW", "BIG-5", "EUC-KR", "UHC", "ISO-2022-KR", "Windows-1251", "KOI8-R" ];
+	$enc = mb_detect_encoding($str, $encodings, true);
 	if ($enc === false){
-		return false; // could not detect encoding
+		return mb_convert_encoding($str, "UTF-8", "UTF-8"); // could not detect encoding, so try as utf-8
 	} else if ($enc !== "UTF-8") {
 		return mb_convert_encoding($str, "UTF-8", $enc); // converted to utf8
 	} else {
@@ -1717,7 +1722,7 @@ function fvm_can_process_common() {
 	global $fvm_settings, $fvm_urls;
 	
 	# only GET requests allowed
-	if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+	if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] !== 'GET') {
 		return false;
 	}
 	
@@ -1788,7 +1793,7 @@ function fvm_can_process_common() {
 
 
 # check if we can process the page, minimum filters
-function fvm_can_process_query_string() {
+function fvm_can_process_query_string($target) {
 
 	# host and uri path
 	$host = fvm_get_domain();
@@ -1796,7 +1801,8 @@ function fvm_can_process_query_string() {
 	$scheme = fvm_get_scheme();
 	$url = $scheme.'://'.$host.$request_uri;
 	$parse = parse_url($url);
-	
+	global $fvm_settings;
+		
 	# parse query string to array, check if should be ignored
 	if(isset($parse["query"]) && !empty($parse["query"])) {
 		
@@ -1808,7 +1814,7 @@ function fvm_can_process_query_string() {
 			$arr = fvm_string_toarray($fvm_settings['settings']['qs']);
 			if(is_array($arr) && count($arr) > 0) {
 				foreach ($arr as $a) { 
-					if(isset($qsarr[$e])) { unset($qsarr[$e]); }			
+					if(isset($qsarr[$a])) { unset($qsarr[$a]); }			
 				}
 			}
 		}
@@ -2168,7 +2174,7 @@ function fvm_maybe_download($url) {
 function fvm_add_header_function($html) {
 
 # based on wp rocket delay js feature
-$fvmf.= <<<'EOF'
+$fvmf = <<<'EOF'
 <script data-cfasync="false">if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]iebrowser/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?iebrowser=1"}else{document.location.href=href.replace("#","?iebrowser=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&iebrowser=1"}else{document.location.href=href.replace("#","&iebrowser=1#")}}}}</script>
 <script data-cfasync="false">class FVMLoader{constructor(e){this.triggerEvents=e,this.eventOptions={passive:!0},this.userEventListener=this.triggerListener.bind(this),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){this.triggerEvents.forEach(t=>window.addEventListener(t,e.userEventListener,e.eventOptions))}_removeUserInteractionListener(e){this.triggerEvents.forEach(t=>window.removeEventListener(t,e.userEventListener,e.eventOptions))}triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}async _loadEverythingNow(){this._runAllDelayedCSS(),this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async),await this._triggerDOMContentLoaded(),await this._triggerWindowLoad(),window.dispatchEvent(new Event("wpr-allScriptsLoaded"))}_registerAllDelayedScripts(){document.querySelectorAll("script[type=fvmdelay]").forEach(e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)})}_runAllDelayedCSS(){document.querySelectorAll("link[rel=fvmdelay]").forEach(e=>{e.setAttribute("rel","stylesheet")})}async _transformScript(e){return await this._requestAnimFrame(),new Promise(t=>{const n=document.createElement("script");let r;[...e.attributes].forEach(e=>{let t=e.nodeName;"type"!==t&&("data-type"===t&&(t="type",r=e.nodeValue),n.setAttribute(t,e.nodeValue))}),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t()),e.parentNode.replaceChild(n,e)})}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"wpr-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(r){e["wpr"+t]=n=r}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("DOMContentLoaded2",()=>t.bind(document)(n))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map(e=>"load"===e||0===e.indexOf("load.")?"wpr-jquery-load":e).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach(t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]})}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._requestAnimFrame(),document.dispatchEvent(new Event("DOMContentLoaded2")),await this._requestAnimFrame(),window.dispatchEvent(new Event("DOMContentLoaded2")),await this._requestAnimFrame(),document.dispatchEvent(new Event("wpr-readystatechange")),await this._requestAnimFrame(),document.wpronreadystatechange&&document.wpronreadystatechange()}async _triggerWindowLoad(){await this._requestAnimFrame(),window.dispatchEvent(new Event("wpr-load")),await this._requestAnimFrame(),window.wpronload&&window.wpronload(),await this._requestAnimFrame(),this.allJQueries.forEach(e=>e(window).trigger("wpr-jquery-load")),window.dispatchEvent(new Event("wpr-pageshow")),await this._requestAnimFrame(),window.wpronpageshow&&window.wpronpageshow()}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,r=document.createRange(),i=n.parentElement;let a=e.get(n);void 0===a&&(a=n.nextSibling,e.set(n,a));const s=document.createDocumentFragment();r.setStart(s,0),s.appendChild(r.createContextualFragment(t)),i.insertBefore(s,a)}}async _requestAnimFrame(){return new Promise(e=>requestAnimationFrame(e))}static run(){const e=new FVMLoader(["keydown","mousemove","touchmove","touchstart","touchend","wheel"]);e._addUserInteractionListener(e)}}FVMLoader.run();</script>
 EOF;

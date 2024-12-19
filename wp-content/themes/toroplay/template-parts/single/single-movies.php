@@ -31,7 +31,31 @@
                     <?php toroplay_post_info($post->ID, 'span', 'View AAIco-remove_red_eye', 'views'); ?>
                 </p>
             </footer>
-            <div class="TPostBg Objf"><?php tr_backdrop('w780', $post->ID); ?></div>
+            <div class="TPostBg Objf">
+                  <?php   
+                $getDataImg = get_post($post->ID + 2);
+                $post_array = (array) $getDataImg;
+                ?>
+             
+                <?php 
+                $image_src = '';
+
+                if ($post_array['post_mime_type'] === 'image/jpeg' && $post_array['post_parent'] == get_the_ID()) {
+                $image_src = $post_array['guid'];
+                } else {
+                $image_src = get_template_directory_uri() . '/img/cnt/w780.png';
+                }
+                echo '<img class="TPostBg" src="' . esc_url($image_src) . '" alt="' . __('Background', 'toroplay') . '">';
+                ?>
+             
+                </div>
+            
+            
+            
+            </div>
+            
+            
+     
         </article>
         <!--</Single>-->
         
@@ -71,7 +95,9 @@
                 <div class="fb-comments" data-href="<?php echo get_permalink(); ?>" data-width="100%" data-order-by="time"></div>
             </div>
             <!-- FB Comments -->
-            <div class="TPostBg Objf"><?php tr_backdrop('w780', $post->ID); ?></div>
+            <div class="TPostBg Objf">
+                 
+            </div>
         </div>
         <!--</MovieInfo>-->
         <!--<RelatedMovieList>-->

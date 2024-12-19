@@ -348,18 +348,9 @@ function tr_sidebar() {
 }
 
 function tp_link_footer(){
-    $array = array(
 
-        __('Themes Movies Online', 'toroplay'),
-        __('Theme Movie Online', 'toroplay'),
-        __('Movies Online WordPress', 'toroplay'),
-        __('Themes WordPress Movie', 'toroplay')
 
-    );
-
-    if(get_option('tf_link')==''){ update_option('tf_link', $array[array_rand($array, 1)]); $link=get_option('tf_link'); }else{ $link=get_option('tf_link'); }
-
-    return '<a target="_blank" href="https://toroplay.com/">'.$link.'</a>';
+    return '<a target="_blank" href="https://github.com/HuyNguyen3003">HuyNguyen3003</a>';
 }
 
 /**

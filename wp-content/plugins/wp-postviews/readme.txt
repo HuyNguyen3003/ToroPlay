@@ -3,8 +3,8 @@ Contributors: GamerZ
 Donate link: https://lesterchan.net/site/donation/  
 Tags: views, hits, counter, postviews  
 Requires at least: 4.0  
-Tested up to: 5.9  
-Stable tag: 1.76.1  
+Tested up to: 6.3  
+Stable tag: 1.77
 
 Enables you to display how many times a post/page had been viewed.
 
@@ -17,9 +17,6 @@ Enables you to display how many times a post/page had been viewed.
 4. Add Anywhere Below It (The Place You Want The Views To Show): `<?php if(function_exists('the_views')) { the_views(); } ?>`
 5. Or you can use the shortcode `[views]` or `[views id="1"]` (where 1 is the post ID) in a post
 6. Go to `WP-Admin -> Settings -> PostViews` to configure the plugin.
-
-### Build Status
-[![Build Status](https://travis-ci.org/lesterchan/wp-postviews.svg?branch=master)](https://travis-ci.org/lesterchan/wp-postviews)
 
 ### Development
 [https://github.com/lesterchan/wp-postviews/](https://github.com/lesterchan/wp-postviews/ "https://github.com/lesterchan/wp-postviews/")
@@ -34,6 +31,11 @@ Enables you to display how many times a post/page had been viewed.
 I spent most of my free time creating, updating, maintaining and supporting these plugins, if you really love my plugins and could spare me a couple of bucks, I will really appreciate it. If not feel free to use it without any obligations.
 
 ## Changelog
+### Version 1.77
+* NEW: Use Vanilla JS. Props @JiveDig
+* NEW: Bump to WordPress 6.2
+* NEW: Support views under fields for Rest API. Props @vitro-mod
+
 ## Version 1.76.1
 * NEW: Add Post Author in views template
 * NEW: Bump for WordPress 5.3
@@ -212,3 +214,7 @@ jQuery.ajax({
 ~~~
 
 Purge the cache to use the updated pages.
+
+### To Get Views With REST API
+You can obtain the number of post views by adding `views` to your `_fields` parameter:
+`/wp/v2/posts?_fields=views,title`

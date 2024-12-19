@@ -3,8 +3,8 @@ Contributors: GamerZ
 Donate link: https://lesterchan.net/site/donation/  
 Tags: ratings, rating, postratings, postrating, vote, digg, ajax, post  
 Requires at least: 4.9.6  
-Tested up to: 6.0  
-Stable tag: 1.90  
+Tested up to: 6.6  
+Stable tag: 1.91.2  
 
 Adds an AJAX rating system for your WordPress site's content.
 
@@ -20,9 +20,6 @@ Adds an AJAX rating system for your WordPress site's content.
 * If you want to embed other post ratings use `[ratings id="1"]`, where 1 is the ID of the post/page ratings that you want to display.
 * If you want to embed other post ratings results, use `[ratings id="1" results="true"]`, where 1 is the ID of the post/page ratings results that you want to display.
 
-### Build Status
-[![Build Status](https://travis-ci.org/lesterchan/wp-postratings.svg?branch=master)](https://travis-ci.org/lesterchan/wp-postratings)
-
 ### Development
 [https://github.com/lesterchan/wp-postratings](https://github.com/lesterchan/wp-postratings "https://github.com/lesterchan/wp-postratings")
 
@@ -34,6 +31,18 @@ Adds an AJAX rating system for your WordPress site's content.
 I spent most of my free time creating, updating, maintaining and supporting these plugins, if you really love my plugins and could spare me a couple of bucks, I will really appreciate it. If not feel free to use it without any obligations.
 
 ## Changelog
+### Version 1.91.2
+* FIXED: XSS in Google Rich Text Snippets
+
+### Version 1.91.1
+* FIXED: Read from default REMOTE_ADDR unless specified in options
+
+### Version 1.91
+* NEW: Supports specifying which header to read the user's IP from
+
+### Version 1.90.1
+* FIXED: Support mutex lock for multi-site.
+
 ### Version 1.90
 * FIXED: Use mutex lock to prevent race condition
 

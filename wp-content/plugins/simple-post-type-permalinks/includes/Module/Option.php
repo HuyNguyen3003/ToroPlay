@@ -49,8 +49,8 @@ class Option extends Module {
 	 * @return string
 	 */
 	public function extract_front_struct( $structure ) {
-		return trim( mb_substr( $structure, 0, mb_strpos( $structure, '%' ) ), '/' );
-	}
+    return trim( mb_substr( $structure, 0, strpos( $structure, '%' ) ), '/' );
+    }
 
 	/**
 	 * @param string $post_type

@@ -3,7 +3,7 @@
  * Plugin Name:     Lazy Social Comments
  * Plugin URI:      https://github.com/Joel-James/lazy-facebook-comments
  * Description:     Light weight Facebook comments with lazy load facility. It loads comments after user clicking on a button or scrolling down. It saves page load time.
- * Version:         2.0.4
+ * Version:         2.0.5
  * Author:          Joel James
  * Author URI:      https://duckdev.com/
  * Donate link:     https://www.paypal.me/JoelCJ
@@ -12,18 +12,18 @@
  * Text Domain:     lazy-facebook-comments
  * Domain Path:     /languages
  *
- * Lazy FB Comments is free software: you can redistribute it and/or modify
+ * Lazy Social Comments is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * any later version.
  *
- * Lazy FB Comments is distributed in the hope that it will be useful,
+ * Lazy Social Comments is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Lazy FB Comments. If not, see <http://www.gnu.org/licenses/>.
+ * along with Lazy Social Comments. If not, see <http://www.gnu.org/licenses/>.
  *
  * @category   Core
  * @package    LFC
@@ -43,7 +43,7 @@ if ( ! class_exists( 'Lazy_Facebook_Comments' ) ) {
 		'LFC_PATH'             => plugins_url( '', __FILE__ ),
 		'LFC_PLUGIN_DIR'       => dirname( __FILE__ ),
 		'LFC_SETTINGS_PAGE'    => admin_url( 'admin.php?page=lfc-settings' ),
-		'LFC_VERSION'          => '2.0.4',
+		'LFC_VERSION'          => '2.0.5',
 		'LFC_ADMIN_PERMISSION' => 'manage_options'
 	);
 

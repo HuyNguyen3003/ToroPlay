@@ -4,10 +4,10 @@ Plugin Name: Loco Translate
 Plugin URI: https://wordpress.org/plugins/loco-translate/
 Description: Translate themes and plugins directly in WordPress
 Author: Tim Whitlock
-Version: 2.6.2
+Version: 2.6.14
 Requires at least: 5.2
 Requires PHP: 5.6.20
-Tested up to: 6.0.0
+Tested up to: 6.7
 Author URI: https://localise.biz/wordpress/plugin
 Text Domain: loco-translate
 Domain Path: /languages/
@@ -33,7 +33,7 @@ function loco_plugin_file(){
  * @return string
  */
 function loco_plugin_version(){
-    return '2.6.2';
+    return '2.6.14';
 }
 
 
@@ -77,23 +77,19 @@ function loco_doing_ajax(){
 
 /**
  * Evaluate a constant by name
- * @param string
+ * @param string $name
  * @return mixed
  */
-function loco_constant( $name ){
-    $value = defined($name) ? constant($name) : null;
-    // constant values will only be modified in tests
-    if( defined('LOCO_TEST') && LOCO_TEST ){
-        $value = apply_filters('loco_constant', $value, $name );
-        $value = apply_filters('loco_constant_'.$name, $value );
+if( ! function_exists('loco_constant') ) {
+    function loco_constant( $name ) {
+        return defined($name) ? constant($name) : null;
     }
-    return $value;
 }
 
 
 /**
  * Runtime inclusion of any file under plugin root
- * @param string PHP file path relative to __DIR__
+ * @param string $relpath PHP file path relative to __DIR__
  * @return mixed return value from included file
  */
 function loco_include( $relpath ){
@@ -118,7 +114,7 @@ function loco_include( $relpath ){
 
 /**
  * Require dependant library once only
- * @param string PHP file path relative to ./lib
+ * @param string $path PHP file path relative to ./lib
  * @return void
  */
 function loco_require_lib( $path ){
@@ -128,7 +124,7 @@ function loco_require_lib( $path ){
 
 /**
  * Check PHP extension required by Loco and load polyfill if needed
- * @param string
+ * @param string $name
  * @return bool
  */
 function loco_check_extension( $name ) {
@@ -138,9 +134,10 @@ function loco_check_extension( $name ) {
             $cache[$name] = true;
         }
         else {
+            // translators: %s refers to the name of a missing PHP extension, for example "mbstring".
             Loco_error_AdminNotices::warn( sprintf( __('Loco Translate requires the "%s" PHP extension. Ask your hosting provider to install it','loco-translate'), $name ) );
-            $class = 'Loco_compat_'.ucfirst($name).'Extension.php';
-            $cache[$name] = class_exists($class);
+            class_exists( ucfirst($name).'Extension' ); // <- pings Loco_hooks_AdminHooks::autoload_compat
+            $cache[$name] = false;
         }
     }
     return $cache[$name];
@@ -149,29 +146,22 @@ function loco_check_extension( $name ) {
 
 /**
  * Class autoloader for Loco classes under src directory.
- * e.g. class "Loco_foo_Bar" wil be found in "src/foo/Bar.php"
- * Also does autoload for polyfills under "src/compat" if $name < 20 chars
+ * e.g. class "Loco_foo_Bar" will be found in "src/foo/Bar.php"
  * 
  * @internal 
- * @param string
+ * @param string $name
  * @return void
  */
 function loco_autoload( $name ){
     if( 'Loco_' === substr($name,0,5) ){
         loco_include( 'src/'.strtr( substr($name,5), '_', '/' ).'.php' );
     }
-    else if( strlen($name) < 20 ){
-        $path = loco_plugin_root().'/src/compat/'.$name.'.php';
-        if( file_exists($path) ){
-            require $path;
-        }
-    }
 }
 
 
 /**
  * class_exists wrapper that fails silently.
- * @param string class name
+ * @param string $class Class name
  * @return bool
  */
 function loco_class_exists( $class ){
@@ -195,7 +185,12 @@ try {
 
     // text domain loading helper for custom file locations. Set constant empty to disable
     if ( LOCO_LANG_DIR ) {
-        new Loco_hooks_LoadHelper;
+        if( version_compare($GLOBALS['wp_version'],'6.6','<') ){
+            new Loco_hooks_LegacyLoadHelper;
+        }
+        else {
+            new Loco_hooks_LoadHelper;
+        }
     }
 
     // initialize hooks for admin screens
@@ -209,9 +204,10 @@ try {
     }
 
 }
-catch( Exception $e ){ // PHP5+
-    trigger_error(sprintf('[Loco.fatal] %s in %s:%u',$e->getMessage(), $e->getFile(), $e->getLine() ),E_USER_NOTICE);
+catch( Exception $e ){
+    trigger_error(sprintf('[Loco.fatal] %s in %s:%u',$e->getMessage(), $e->getFile(), $e->getLine() ) );
 }
-catch( Throwable $e ){ // PHP7+
-    trigger_error(sprintf('[Loco.fatal] %s in %s:%u',$e->getMessage(), $e->getFile(), $e->getLine() ),E_USER_NOTICE);
+/** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
+catch( Throwable $e ){
+    trigger_error(sprintf('[Loco.fatal] %s in %s:%u',$e->getMessage(), $e->getFile(), $e->getLine() ) );
 }

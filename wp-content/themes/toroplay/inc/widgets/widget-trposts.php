@@ -329,23 +329,41 @@ class WP_Widget_Trposts extends WP_Widget {
         
 		<p><?php _e('Filter categories', 'toroplay'); ?></p>
 		<ul>
-            <?php
-            $lst=''; $ar='';
-        
-                $ar=explode(',', $filter);
-                foreach ($ar as &$value) {
-                    $lst[$value] = $value;
-                }
-                $categories = get_categories('hide_empty=0');
-                foreach ($categories as $category) {
-            ?>
+		    
+		    
+		    
+		    
+<?php
+$lst = []; // Khởi tạo $lst là một mảng
+$ar = [];  // Khởi tạo $ar là một mảng
+
+// Kiểm tra xem $filter có phải là một chuỗi không và không rỗng
+if (is_string($filter) && !empty($filter)) {
+    $ar = explode(',', $filter);
+    
+    foreach ($ar as $value) {
+        $value = trim($value); // Xóa khoảng trắng
+        if (!empty($value)) {   // Kiểm tra xem $value có khác rỗng không
+            $lst[$value] = $value; // Thêm vào mảng $lst
+        }
+    }
+}
+
+// Lấy danh sách các danh mục
+$categories = get_categories('hide_empty=0');
+foreach ($categories as $category) {
+    // Xử lý danh mục ở đây
+}
+?>
+            
+            
+            
+            
 		    <li>
 		        <input <?php if(isset($lst[$category->term_id])){checked( $lst[$category->term_id], $category->term_id); } ?> type="checkbox" class="checkbox" name="<?php echo $this->get_field_name('filter'); ?>[]" value="<?php echo $category->term_id; ?>"  />
 		        <label><?php echo $category->cat_name ?></label><br />
 		    </li>
-		    <?php
-                }
-            ?>
+		 
 		</ul>
 		
         <p>

@@ -3,8 +3,8 @@ Contributors: joelcj91,duckdev
 Tags: facebook comments, lazy laod, lazy comments, lazy fb comment, fb comments, facebook lazy comments, lazy load fb
 Donate link: https://www.paypal.me/JoelCJ
 Requires at least: 3.0
-Tested up to: 5.9
-Stable tag: 2.0.4
+Tested up to: 6.3
+Stable tag: 2.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,7 +117,11 @@ Bug reports are always welcome. [Report here](https://duckdev.com/support/).
 
 == Changelog ==
 
-= 2.0.4 (11/01/2019) =
+= 2.0.5 (11/01/2023) =
+
+- 🐛 Security fixes.
+
+= 2.0.4 (03/09/2019) =
 
 - 📦 Added comment moderation link.
 
@@ -154,6 +158,6 @@ Bug reports are always welcome. [Report here](https://duckdev.com/support/).
 
 == Upgrade Notice ==
 
-= 2.0.4 (11/01/2019) =
+= 2.0.5 (11/01/2023) =
 
-- 📦 Added comment moderation link.
+- 🐛 Security fixes.

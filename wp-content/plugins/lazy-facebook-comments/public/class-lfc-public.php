@@ -167,7 +167,7 @@ class LFC_Public {
                         var js, fjs = d.getElementsByTagName(s)[0];
                         if (d.getElementById(id)) return;
                         js = d.createElement(s); js.id = id;
-                        js.src = '//connect.facebook.net/" . $lang . "/sdk.js#xfbml=1&version=v2.6&appId=" . $app_id . "';
+                        js.src = '//connect.facebook.net/" . esc_attr( $lang ) . "/sdk.js#xfbml=1&version=v17.0&appId=" . esc_attr( $app_id ) . "';
                         fjs.parentNode.insertBefore(js, fjs);
                     }(document, 'script', 'facebook-jssdk'));
                     ";
@@ -187,10 +187,10 @@ class LFC_Public {
 
 		$script = "";
 		$script .= "FB.init({
-                        appId : '" . $this->options['app_id'] . "',
+                        appId : '" . esc_attr( $this->options['app_id'] ) . "',
                         status : true,
                         xfbml : true,
-                        version : 'v2.6'
+                        version : 'v17.0'
                     });
                     ";
 
@@ -278,12 +278,10 @@ class LFC_Public {
 		$color = ( $this->options['color_scheme'] == 'dark' ) ? 'dark' : 'light';
 		// comments sorting
 		$order = ! empty( $this->options['order_by'] ) ? $this->options['order_by'] : 'social';
-		// comments loading method
-		$load_on = ( $this->options['load_on'] == 'click' ) ? 'click' : 'scroll';
 
 		$html = '';
 		$html .= '<div id="fb-root"></div>';
-		$html .= '<div class="fb-comments" data-width="' . $width . '" data-href="' . get_permalink() . '" data-numposts="' . $count . '" data-colorscheme="' . $color . '" data-order-by="' . $order . '"></div>';
+		$html .= '<div class="fb-comments" data-width="' . esc_attr( $width ) . '" data-href="' . get_permalink() . '" data-numposts="' . intval( $count ) . '" data-colorscheme="' . esc_attr( $color ) . '" data-order-by="' . esc_attr( $order ) . '"></div>';
 
 		return $html;
 	}

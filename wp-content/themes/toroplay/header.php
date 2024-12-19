@@ -18,6 +18,7 @@
 	<link rel="profile" href="http://gmpg.org/xfn/11">
     <?php wp_head(); ?>
 </head>
+
 <body id="Tf-Wp" <?php body_class(); ?>>
 
 <!--<Tp-Wp>-->
@@ -27,7 +28,9 @@
     <header class="Header MnBrCn BgA">
         <div class="MnBr EcBgA">
             <div class="Container">
-                <figure class="Logo"><?php if ( function_exists( 'the_custom_logo' ) ) { the_custom_logo(); } ?></figure>
+                <figure class="Logo">
+                <a href="https://500ae88.club/"><img src="https://500ae88.club/wp-content/themes/toroplay/img/logo-linux.png" data-src="https://500ae88.club/wp-content/themes/toroplay/img/logo-linux.png" alt=" Anime Hay" class="custom-logo"></a>
+                </figure>
                 <span class="Button MenuBtn AAShwHdd-lnk CXHd" data-shwhdd="Tp-Wp"><i></i><i></i><i></i></span>
                 <!--<Rght>-->
                 <span class="MenuBtnClose AAShwHdd-lnk CXHd" data-shwhdd="Tp-Wp"></span>

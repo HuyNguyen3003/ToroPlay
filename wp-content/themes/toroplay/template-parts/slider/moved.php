@@ -82,13 +82,31 @@
         <?php
             while( $trslidermoved_query_results->have_posts() ) {	
                 $trslidermoved_query_results->the_post();
+
+ 
         ?>
         <div class="TPostMv">
             <div class="TPost D">
                 <a href="<?php the_permalink(); ?>">
-                    <div class="Image">
-                        <figure class="Objf"><?php tr_backdrop('w780'); ?></figure>
-                    </div>
+                <div class="Image">
+                <?php   
+                $getDataImg = get_post(get_the_ID() + 2);
+                $post_array = (array) $getDataImg;
+                ?>
+                <figure class="Objf">
+                <?php 
+                $image_src = '';
+
+                if ($post_array['post_mime_type'] === 'image/jpeg' && $post_array['post_parent'] == get_the_ID()) {
+                $image_src = $post_array['guid'];
+                } else {
+                $image_src = get_template_directory_uri() . '/img/cnt/w780.png';
+                }
+                echo '<img class="TPostBg" src="' . esc_url($image_src) . '" alt="' . __('Background', 'toroplay') . '">';
+                ?>
+                </figure>
+                </div>
+                
                 </a>
                 <div class="TPMvCn">
                     <a href="<?php the_permalink(); ?>">

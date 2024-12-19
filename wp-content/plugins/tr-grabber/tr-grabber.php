@@ -123,9 +123,9 @@ register_activation_hook(__FILE__, 'tr_grabber_install');
 
 if ( get_option('tr_grabber') ) {
     $config = unserialize ( get_option('tr_grabber') );
-    $homeconfig = $config['homecontrol'];
+    $homeconfig = isset($config['homecontrol']) ? $config['homecontrol'] : [];
 
-    if ( !in_array('Animes|index/animes|1', $homeconfig) || !in_array('TV Shows|index/tvshows|1', $homeconfig) ) {
+    if (!is_array($homeconfig) || !in_array('Animes|index/animes|1', $homeconfig) || !in_array('TV Shows|index/tvshows|1', $homeconfig)) {
         $array[] = 'Slider|slider/moved|1';
         $array[] = 'Movies|index/movies|1';
         $array[] = 'Series|index/series|1';

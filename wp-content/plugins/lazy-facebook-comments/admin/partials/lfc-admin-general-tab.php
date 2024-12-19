@@ -8,21 +8,21 @@
                 <tr>
                     <th><?php _e('FB Application ID', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="text" placeholder="1234567890" name="lfc_options[app_id]" value="<?php echo $options['app_id']; ?>" required>
+                        <input type="text" placeholder="1234567890" name="lfc_options[app_id]" value="<?php echo esc_attr( $options['app_id'] ); ?>" required>
                         <p class="description"><?php _e('Enter you facebook App ID that you get from', 'lazy-facebook-comments'); ?> <a href="https://developers.facebook.com/apps/" target="_blank"><?php _e('Facebook Developers', 'lazy-facebook-comments'); ?></a></p>
                     </td>
                 </tr>
                 <tr>
                     <th><?php _e('Comment Box Width (px)', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="number" min="350" placeholder="Default 100%" name="lfc_options[box_width]" value="<?php echo $options['box_width']; ?>">
+                        <input type="number" min="350" placeholder="Default 100%" name="lfc_options[box_width]" value="<?php echo intval( $options['box_width'] ); ?>">
                         <p class="description"><?php _e('Comments box width. Minimum is 350. Leave empty for responsive 100%.', 'lazy-facebook-comments'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th><?php _e('Number of Comments', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="number" min="1" placeholder="10" name="lfc_options[comments_count]" value="<?php echo $options['comments_count']; ?>" required>
+                        <input type="number" min="1" placeholder="10" name="lfc_options[comments_count]" value="<?php echo intval( $options['comments_count'] ); ?>" required>
                         <p class="description"><?php _e('No. of comments to show by default', 'lazy-facebook-comments'); ?></p>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
                 <tr>
                     <th><?php _e('Language', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="text" placeholder="en_US" name="lfc_options[comments_lang]" value="<?php echo $options['comments_lang']; ?>" required>
+                        <input type="text" placeholder="en_US" name="lfc_options[comments_lang]" value="<?php echo esc_attr( $options['comments_lang'] ); ?>" required>
                         <p class="description"><?php _e('Full list is available', 'lazy-facebook-comments'); ?> <a href="http://www.facebook.com/translations/FacebookLocales.xml" target="_blank"><?php _e('here', 'lazy-facebook-comments'); ?></a></p>
                     </td>
                 </tr>
@@ -67,14 +67,14 @@
                 <tr>
                     <th><?php _e('Comments Div Class', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="text" placeholder="comments-area" name="lfc_options[div_class]" value="<?php echo $options['div_class']; ?>">
+                        <input type="text" placeholder="comments-area" name="lfc_options[div_class]" value="<?php echo esc_attr( $options['div_class'] ); ?>">
                         <p class="description"><?php _e('If you want to customize the comments area div using CSS, enter the div class here.', 'lazy-facebook-comments'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th><?php _e('Button Text', 'lazy-facebook-comments'); ?></th>
                     <td>
-                        <input type="text" placeholder="Load Comments" name="lfc_options[button_text]" value="<?php echo $options['button_text']; ?>" required>
+                        <input type="text" placeholder="Load Comments" name="lfc_options[button_text]" value="<?php echo esc_attr( $options['button_text'] ); ?>" required>
                         <p class="description"><?php _e('Customize the button text, if you are using On Click method.', 'lazy-facebook-comments'); ?></p>
                     </td>
                 </tr>

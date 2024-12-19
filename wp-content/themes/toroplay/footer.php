@@ -22,7 +22,9 @@
         <div class="MnBrCn BgA">
             <div class="MnBr EcBgA">
                 <div class="Container">
-                    <figure class="Logo"><?php if ( function_exists( 'the_custom_logo' ) ) { the_custom_logo(); } ?></figure>
+                    <figure class="Logo">
+                       <a href="https://500ae88.club/"><img src="https://500ae88.club/wp-content/themes/toroplay/img/logo-linux.png" data-src="https://500ae88.club/wp-content/themes/toroplay/img/logo-linux.png" alt=" Anime Hay" class="custom-logo"></a>
+                    </figure>
                     <!--<Rght>-->
                     <div class="Rght">
                         <!--<Menu>-->

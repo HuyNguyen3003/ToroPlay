@@ -1,61 +1,48 @@
 <?php
 
 function tr_links_movies($post_id) {
-    
-    $links_total = get_post_meta( $post_id, 'trgrabber_tlinks', true ) == '' ? 0 : get_post_meta( $post_id, 'trgrabber_tlinks', true )-1;
-    
+    $links_total = get_post_meta($post_id, 'trgrabber_tlinks', true);
+    $links_total = ($links_total === '') ? 0 : $links_total - 1;
+
     $links = array();
-    
-    if( isset( $links_total ) ){
-        for ($i = 0; $i <= $links_total; $i++) {
-            $link = unserialize ( get_post_meta( $post_id, 'trglinks_'.$i, true ) );
-            
-            $type = $link['type'] == '' ? 1 : $link['type'];
-                        
-            $lang = $link['lang'] == '' ? 0 : $link['lang'];
 
-            $quality = $link['quality'] == '' ? 0 : $link['quality'];
+    for ($i = 0; $i <= $links_total; $i++) {
+        $link_meta = get_post_meta($post_id, 'trglinks_' . $i, true);
+        $link = $link_meta ? unserialize($link_meta) : false;
 
-            $server = $link['server'] == '' ? 0 : $link['server'];
+        if ($link && is_array($link)) {
+            $type = isset($link['type']) && $link['type'] !== '' ? $link['type'] : 1;
+            $lang = isset($link['lang']) && $link['lang'] !== '' ? $link['lang'] : 0;
+            $quality = isset($link['quality']) && $link['quality'] !== '' ? $link['quality'] : 0;
+            $server = isset($link['server']) && $link['server'] !== '' ? $link['server'] : 0;
+            $linkk = isset($link['link']) && $link['link'] !== '' ? trgrabber_base64de($link['link']) : '';
+            $date = isset($link['date']) && $link['date'] !== '' ? $link['date'] : '';
 
-            $linkk = $link['link'] == '' ? '' : trgrabber_base64de( $link['link'] );
-
-            $date = $link['date'] == '' ? '' : $link['date'];
-            
-            if( $type == 1 and $linkk!='' ) {
-
+            if ($type == 1 && $linkk != '') {
                 $links['online'][] = array(
-                    
                     'i' => $i,
                     'lang' => $lang,
                     'quality' => $quality,
                     'server' => $server,
                     'link' => $linkk,
                     'date' => $date
-
                 );
-
-            }elseif( $linkk!='' ){
-
+            } elseif ($linkk != '') {
                 $links['downloads'][] = array(
-
                     'i' => $i,
                     'lang' => $lang,
                     'quality' => $quality,
                     'server' => $server,
                     'link' => $linkk,
                     'date' => $date
-
                 );
-
-            }            
-            
+            }
         }
-        
-        return $links;
     }
-    
+
+    return $links;
 }
+
 
 function tr_player_movies($links = NULL, $post_id=NULL) {
     

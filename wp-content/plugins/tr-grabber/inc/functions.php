@@ -495,7 +495,15 @@ add_action( 'plugins_loaded', 'trgrabber_loaded' );
 function trgrabber_loaded()
 {
     global $config_grabber;
-    if (is_super_admin() and !isset($_POST['nonce']) and ($config_grabber['themes.torothemes.com/toroplay']) and empty($_POST['action']) and !isset($_COOKIE['trsk']) ) { add_action('init', 'tr_grabber_redirect_validate'); }
+    if (
+    is_super_admin() &&
+    !isset($_POST['nonce']) &&
+    isset($config_grabber['themes.torothemes.com/toroplay']) && // Kiểm tra key tồn tại
+    !empty($_POST['action']) && // Nếu bạn muốn kiểm tra ngược lại, dùng empty
+    !isset($_COOKIE['trsk'])
+) {
+    add_action('init', 'tr_grabber_redirect_validate');
+}
     
 }
 
