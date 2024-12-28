@@ -35,15 +35,35 @@
                 <!--<Rght>-->
                 <span class="MenuBtnClose AAShwHdd-lnk CXHd" data-shwhdd="Tp-Wp"></span>
                 <div class="Rght BgA">
-                    <!--<Search>-->
-                    <div class="Search"><?php get_template_part( 'formsearch' ); ?></div>
-                    <!--</Search>-->
+                   
                     <!--<Menu>-->
                     <nav class="Menu">
-                        <ul>
-                            <?php wp_nav_menu(array('container' => false, 'theme_location' => 'primary_menu', 'items_wrap' => '%3$s', 'fallback_cb' => 'tr_default_menu', 'menu_id' => 'primary-menu')); ?>
-                        </ul>
-                    </nav>
+    <ul>
+        <?php
+        // Kết nối với cơ sở dữ liệu sử dụng $wpdb
+        global $wpdb;
+
+        // Lấy tất cả danh mục từ bảng category
+        $categories = $wpdb->get_results("SELECT * FROM category ORDER BY name ASC");
+
+        // Kiểm tra nếu có danh mục và hiển thị chúng
+        if ($categories) {
+            foreach ($categories as $category) {
+                ?>
+                <li class="cat-item cat-item-<?php echo esc_attr($category->id); ?>">
+                    <a href="https://500ae88.club/category/<?php echo esc_attr(sanitize_title_with_dashes($category->id)); ?>">
+                        <?php echo esc_html($category->name); ?>
+                    </a>
+                </li>
+                <?php
+            }
+        } else {
+            echo '<li>No categories found.</li>';
+        }
+        ?>
+    </ul>
+</nav>
+
                     <!--</Menu>-->
                 </div>
                 <!--</Rght>-->

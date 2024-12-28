@@ -141,6 +141,48 @@ function toroplay_content_width() {
 }
 add_action( 'after_setup_theme', 'toroplay_content_width', 0 );
 
+
+
+// Thêm Rewrite Rule để nhận diện URL /category/{id}
+function custom_category_rewrite_rule() {
+    add_rewrite_rule(
+        '^category/([0-9]+)/?$',
+        'index.php?category_id=$matches[1]',
+        'top'
+    );
+}
+add_action('init', 'custom_category_rewrite_rule');
+
+// Thêm query var 'category_id'
+function add_category_id_query_var($vars) {
+    $vars[] = 'category_id'; // Thêm biến query 'category_id'
+    return $vars;
+}
+add_filter('query_vars', 'add_category_id_query_var');
+
+// Chỉnh sửa template dựa trên category_id
+function custom_category_template($template) {
+    if (get_query_var('category_id')) {
+        // Lấy giá trị category_id từ query
+        $category_id = get_query_var('category_id');
+        
+        // Lấy danh sách bộ phim từ bảng movies dựa trên category_id
+        global $wpdb;
+        $movies = $wpdb->get_results($wpdb->prepare("SELECT * FROM movies WHERE id_category = %d", $category_id));
+        
+        if ($movies) {
+            // Nếu tìm thấy các bộ phim có id_category, trả về template category-movie.php
+            $template = locate_template('category-movie.php'); // Tạo file category-movie.php
+        } else {
+            // Nếu không có bộ phim nào, trả về trang lỗi 404
+            $template = get_404_template();
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'custom_category_template');
+
+
 /**
  * Register widget area.
  *

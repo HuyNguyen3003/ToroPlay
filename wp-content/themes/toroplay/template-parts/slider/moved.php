@@ -76,69 +76,7 @@
     if ($trslidermoved_query_results->have_posts() ) :
 
 ?>
-<!--<MovieListSld>-->
-<div class="MovieListSldCn">
-    <div class="MovieListSld owl-carousel" data-autoplay="<?php echo get_theme_mod('slider_autoplay', false); ?>">
-        <?php
-            while( $trslidermoved_query_results->have_posts() ) {	
-                $trslidermoved_query_results->the_post();
 
- 
-        ?>
-        <div class="TPostMv">
-            <div class="TPost D">
-                <a href="<?php the_permalink(); ?>">
-                <div class="Image">
-                <?php   
-                $getDataImg = get_post(get_the_ID() + 2);
-                $post_array = (array) $getDataImg;
-                ?>
-                <figure class="Objf">
-                <?php 
-                $image_src = '';
-
-                if ($post_array['post_mime_type'] === 'image/jpeg' && $post_array['post_parent'] == get_the_ID()) {
-                $image_src = $post_array['guid'];
-                } else {
-                $image_src = get_template_directory_uri() . '/img/cnt/w780.png';
-                }
-                echo '<img class="TPostBg" src="' . esc_url($image_src) . '" alt="' . __('Background', 'toroplay') . '">';
-                ?>
-                </figure>
-                </div>
-                
-                </a>
-                <div class="TPMvCn">
-                    <a href="<?php the_permalink(); ?>">
-                        <?php tr_title('titleslider', 'Title', true, tr_theme_clip_text(get_the_title(), 20).tr_icon_tv()); ?>
-                    </a>
-                    <p class="Info">
-                        <?php toroplay_entry_header($show_rating=get_theme_mod('show_rating_slider', true), $show_year=get_theme_mod('show_year_slider', true), $show_quality=get_theme_mod('show_quality_slider', true), $show_runtime=get_theme_mod('show_duration_slider', true), $show_views=get_theme_mod('show_views_slider', false)); ?>
-                    </p>
-                    <div class="Description">
-                        <?php
-                            if( get_theme_mod('show_description_slider', true) ) {
-                                echo'<p>'.tr_theme_clip_text( strip_tags(get_the_content()), 200 ).'</p>';
-                            }
-                        ?>
-                        <?php toroplay_entry_footer($show_tags=get_theme_mod('show_tag_slider', false), $limit=2, $show_cat=get_theme_mod('show_geners_slider', true), $show_directors=get_theme_mod('show_directors_slider', true), $show_cast=get_theme_mod('show_cast_slider', true)); ?>
-                    </div>
-                    <a href="<?php the_permalink(); ?>" class="Button TPlay AAIco-play_arrow">
-                        <?php
-                        if(tr_check_type($post->ID)==2){
-                            printf( __('Watch %sSerie%s', 'toroplay'), '<strong>', '</strong>' );
-                        }else{
-                            printf( __('Watch %sMovie%s', 'toroplay'), '<strong>', '</strong>' );
-                        }
-                        ?>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <?php } ?>
-    </div>
-</div>
-<!--</MovieListSld>-->
 <?php
 	/* Restore original Post Data */
     wp_reset_postdata();

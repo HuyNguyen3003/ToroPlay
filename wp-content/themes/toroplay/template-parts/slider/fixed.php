@@ -77,28 +77,7 @@
     if ($trsliderfixed_query_results->have_posts() ) :
 
 ?>
-<!--<MovieListTopCn>-->
-<div class="MovieListTopCn">
-    <div class="MovieListTop owl-carousel" data-autoplay="<?php echo get_theme_mod('carrousel_autoplay', false); ?>">
-        <?php
-            while( $trsliderfixed_query_results->have_posts() ) {		
-                $trsliderfixed_query_results->the_post();
-        ?>
-        <div class="TPostMv">
-            <div class="TPost B">
-                <a href="<?php the_permalink(); ?>">
-                    <div class="Image">
-                        <figure class="Objf TpMvPlay AAIco-play_arrow"><?php echo tr_theme_img(get_the_ID(), 'thumbnail', get_the_title()).toroplay_entry_header(false, false, $show_quality, false, false, false); ?>
-                        </figure>
-                        <?php toroplay_entry_header(false, false, false, false, false, true); ?>
-                    </div>
-                    <?php tr_title('titlecarrousel', 'Title', true, tr_theme_clip_text(get_the_title(), 80) ); ?>
-                </a>
-            </div>
-        </div>
-        <?php } ?>
-    </div>
-</div>
+
 <!--</section>-->
 <?php
 	/* Restore original Post Data */

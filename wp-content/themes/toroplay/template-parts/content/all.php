@@ -19,7 +19,7 @@
 
 ?>
 <!--<MovieList>-->
-<section>
+<!-- <section>
     <div class="Top">
         <?php tr_title('tp_page', 'Title'); ?>
     </div>
@@ -51,7 +51,7 @@
 
     </ul>
         
-</section>
+</section> 
 <!--</MovieList>-->
 
 <?php } ?>
